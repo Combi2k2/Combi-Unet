@@ -8,22 +8,21 @@ import os
 class BasicDataset(Dataset):
     def __init__(self, imgs_dir, masks_dir):
         self.images = []
-        self.masks = []
+        self.masks  = []
 
         show_size = True
 
         for file in os.listdir(imgs_dir):
-            file_dir = imgs_dir + '/' + file
-            img  = cv2.imread(file_dir)
-            img  = cv2.resize(img, dsize = (300, 200), interpolation = cv2.INTER_AREA)
+            img  = cv2.imread(imgs_dir  + '/' + file[:-4] + '.jpg')
+            mask = cv2.imread(masks_dir + '/' + file[:-4] + '.png', cv2.IMREAD_GRAYSCALE)
+
+            if (not np.any(mask)):
+                continue
+            
+            img  = cv2.resize(img,  dsize = (300, 200), interpolation = cv2.INTER_AREA)
+            mask = cv2.resize(mask, dsize = (300, 200), interpolation = cv2.INTER_AREA)
 
             self.images.append(img)
-
-        for file in os.listdir(masks_dir):
-            file_dir = masks_dir + '/' + file
-            mask = cv2.imread(file_dir, cv2.IMREAD_GRAYSCALE)
-            mask = cv2.resize(mask, dsize = (300, 200), interpolation = cv2.INTER_AREA)   
-
             self.masks.append(mask)
 
     def __len__(self):
